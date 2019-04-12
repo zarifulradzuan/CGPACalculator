@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -37,6 +38,19 @@ public class MainActivity extends AppCompatActivity {
         subjName = findViewById(R.id.edtSubjectName);
         subjHour = findViewById(R.id.edtCreditHour);
         gradeSpinner = findViewById(R.id.edtGradeSpinner);
+        gradeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                int item = gradeSpinner.getSelectedItemPosition();
+                gradePos = item;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+
+        });
         txtCgpa = findViewById(R.id.txtCGPA);
         sharedPreferences = getApplicationContext().getSharedPreferences("cgpaCalculator", MODE_PRIVATE);
         studentNo = sharedPreferences.getString("studentNo", null);
@@ -45,26 +59,26 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivityForResult(intent, 0);
         }
-        else
+        else{
+            Toast.makeText(getApplicationContext(),"Welcome "+studentName,Toast.LENGTH_SHORT).show();
             loadData();
+        }
     }
 
     private void loadData(){
         List<Subject> subjects = dbSubject.fnGetSubject(studentNo);
         if (!subjects.isEmpty()){
-            double hour=0.0, grade=0.0, totalHour=0.0, totalGrade=0.0;
+            double totalHour=0.0, totalGrade=0.0;
             for( Subject subject : subjects){
                 totalGrade+=subject.getGrade()*subject.getCreditHour();
                 totalHour+=subject.getCreditHour();
             }
-            double cgpa=0.0;
-            cgpa=totalGrade/totalHour;
-            System.out.println(cgpa+" "+totalGrade+" "+totalHour);
-            txtCgpa.setText("Your CGPA is: "+String.valueOf(cgpa));
+            txtCgpa.setText("Your CGPA is: "+String.valueOf(totalGrade/totalHour));
         }
     }
 
     protected void saveSubj(View vw){
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Confirm?");
         builder.setMessage("Confirm to save subject?");
@@ -81,24 +95,17 @@ public class MainActivity extends AppCompatActivity {
                 String subjectName = subjName.getText().toString();
                 String subjectHour = subjHour.getText().toString();
                 double gradePoint[] = {4, 3.7, 3.3, 3, 2.7, 2.3, 2, 1.7, 1.3, 1, 0};
-                gradeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        int item = gradeSpinner.getSelectedItemPosition();
-                        gradePos = item;
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
                 Subject subject = new Subject(subjectCode, subjectName, Double.valueOf(subjectHour), gradePoint[gradePos],studentNo);
                 dbSubject.fnInsertSubject(subject);
                 loadData();
+                subjCode.setText("");
+                subjHour.setText("");
+                subjName.setText("");
+                gradeSpinner.setSelection(0);
             }
         });
         builder.show();
+
     }
 
 
@@ -110,7 +117,14 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("studentName",intent.getStringExtra("studentName"));
             editor.putString("studentNo",intent.getStringExtra("studentNo"));
             editor.commit();
+            Toast.makeText(getApplicationContext(),"Welcome "+intent.getStringExtra("studentName"),Toast.LENGTH_SHORT).show();
             loadData();
         }
     }
 }
+
+
+
+
+
+

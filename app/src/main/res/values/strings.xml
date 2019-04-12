@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CGPA Calculator</string>
+    <string name="app_name">FTMK CGPA Calculator</string>
     <string-array name="grade">
         <item>A</item>
         <item>A-</item>
