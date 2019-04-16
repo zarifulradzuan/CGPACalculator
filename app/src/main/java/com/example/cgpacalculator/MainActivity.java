@@ -3,12 +3,15 @@ package com.example.cgpacalculator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -26,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
     DBSubject dbSubject;
     String studentNo;
     String studentName;
-    int gradePos=0;
     SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,22 +36,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         dbSubject = new DBSubject(getApplicationContext());
 
-        subjCode = findViewById(R.id.edtSubjectCode);
-        subjName = findViewById(R.id.edtSubjectName);
-        subjHour = findViewById(R.id.edtCreditHour);
-        gradeSpinner = findViewById(R.id.edtGradeSpinner);
+        subjCode = findViewById(R.id.addSubjectCode);
+        subjName = findViewById(R.id.addSubjectName);
+        subjHour = findViewById(R.id.addCreditHour);
+        gradeSpinner = findViewById(R.id.addGradeSpinner);
         gradeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int item = gradeSpinner.getSelectedItemPosition();
-                gradePos = item;
+
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                gradeSpinner.setSelection(0);
             }
-
         });
         txtCgpa = findViewById(R.id.txtCGPA);
         sharedPreferences = getApplicationContext().getSharedPreferences("cgpaCalculator", MODE_PRIVATE);
@@ -66,11 +66,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData(){
-        List<Subject> subjects = dbSubject.fnGetSubject(studentNo);
+        List<Subject> subjects = dbSubject.fnGetSubjects(studentNo);
         if (!subjects.isEmpty()){
+            double gradePoint[] = {4, 3.7, 3.3, 3, 2.7, 2.3, 2, 1.7, 1.3, 1, 0};
             double totalHour=0.0, totalGrade=0.0;
+            Resources res = getResources();
+            TypedArray gradeChar = res.obtainTypedArray(R.array.grade);
             for( Subject subject : subjects){
-                totalGrade+=subject.getGrade()*subject.getCreditHour();
+
+                //System.out.println(subject.getSubjectName()+" "+subject.getSubjectCode()+" "+gradePoint[subject.getGrade()]+" "+gradeChar.getString(subject.getGrade()));
+                totalGrade+=gradePoint[subject.getGrade()]*subject.getCreditHour();
                 totalHour+=subject.getCreditHour();
             }
             txtCgpa.setText("Your CGPA is: "+String.valueOf(totalGrade/totalHour));
@@ -94,8 +99,9 @@ public class MainActivity extends AppCompatActivity {
                 String subjectCode =subjCode.getText().toString();
                 String subjectName = subjName.getText().toString();
                 String subjectHour = subjHour.getText().toString();
-                double gradePoint[] = {4, 3.7, 3.3, 3, 2.7, 2.3, 2, 1.7, 1.3, 1, 0};
-                Subject subject = new Subject(subjectCode, subjectName, Double.valueOf(subjectHour), gradePoint[gradePos],studentNo);
+                int grade = gradeSpinner.getSelectedItemPosition();
+                System.out.println(subjectCode+" "+subjectName+" "+subjectHour+ " "+ grade+" "+ studentNo);
+                Subject subject = new Subject(subjectCode, subjectName, Double.valueOf(subjectHour), gradeSpinner.getSelectedItemPosition(),studentNo);
                 dbSubject.fnInsertSubject(subject);
                 loadData();
                 subjCode.setText("");
@@ -112,15 +118,42 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent){
         super.onActivityResult(requestCode, resultCode, intent);
-        if(resultCode==RESULT_OK){
+        if(resultCode==RESULT_OK && requestCode == 0){
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("studentName",intent.getStringExtra("studentName"));
             editor.putString("studentNo",intent.getStringExtra("studentNo"));
             editor.commit();
-            Toast.makeText(getApplicationContext(),"Welcome "+intent.getStringExtra("studentName"),Toast.LENGTH_SHORT).show();
-            loadData();
         }
+        finish();
+        startActivity(getIntent());
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int idMenu = item.getItemId();
+        Intent intent = null;
+
+        if(idMenu == R.id.menuListSubject){
+            intent = new Intent(getApplicationContext(),ListActivity.class);
+            intent.putExtra("studentNo", studentNo);
+            startActivityForResult(intent,1);
+        }
+        if(idMenu == R.id.menuLogOut){
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.commit();
+            finish();
+            startActivity(getIntent());
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }
 
 

@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <EditText
-        android:id="@+id/edtSubjectCode"
+        android:id="@+id/addSubjectCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -16,7 +16,7 @@
         android:inputType="textPersonName" />
 
     <EditText
-        android:id="@+id/edtSubjectName"
+        android:id="@+id/addSubjectName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -24,7 +24,7 @@
         android:inputType="textPersonName" />
 
     <EditText
-        android:id="@+id/edtCreditHour"
+        android:id="@+id/addCreditHour"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -44,7 +44,7 @@
             android:text="Grade:" />
 
         <Spinner
-            android:id="@+id/edtGradeSpinner"
+            android:id="@+id/addGradeSpinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

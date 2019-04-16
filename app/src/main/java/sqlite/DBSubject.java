@@ -26,11 +26,12 @@ public class DBSubject extends SQLiteOpenHelper {
     public static final String colSubCode = "subject_code";
     public static final String colSubjHour = "subject_hour";
     public static final String colSubGrade = "subject_grade";
+    public static final String colSubjId = "subject_id";
 
     public static final String strCrtTblStudent = "CREATE TABLE "+ tblNameStudent +
             " ("+ colStudNo + " TEXT PRIMARY KEY, "+ colStudName +" TEXT) ";
     public static final String strCrtTblSubject = "CREATE TABLE "+ tblNameSubject +
-            " ("+ colStudNo + " TEXT, "+ colSubCode +" TEXT, " +
+            " ("+ colSubjId + " INTEGER PRIMARY KEY, "+  colStudNo + " TEXT, "+ colSubCode +" TEXT, " +
             colSubGrade+ " REAL, "+ colSubjName+" TEXT, " + colSubjHour+ " REAL)";
     public static final String strDropTblSubject = "DROP TABLE IF EXISTS " + tblNameSubject;
     public static final String strDropTblStudent = "DROP TABLE IF EXISTS " + tblNameStudent;
@@ -77,18 +78,19 @@ public class DBSubject extends SQLiteOpenHelper {
         return retResult;
     }
 
-    /*public float fnEditExpense(ExpensesDBModel meExpense){
-        float retResult = 0;
+    public float fnEditSubject(Subject subject){
+        float retResult;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(colExpName, meExpense.getStrExpName());
-        values.put(colExpDate, meExpense.getStrExpDate());
-        values.put(colExpPrice, meExpense.getStrExpPrice());
-        values.put(colExpTime, meExpense.getStrExpTime());
 
-        retResult = db.update(tblNameExpense, values, colExpId+" = ?",new String[]{meExpense.getStrExpId()});
+        values.put(colSubCode, subject.getSubjectCode());
+        values.put(colSubjName, subject.getSubjectName());
+        values.put(colSubjHour, subject.getCreditHour());
+        values.put(colSubGrade, subject.getGrade());
+
+        retResult = db.update(tblNameSubject, values, colSubjId+" = ?", new String[]{subject.getSubjectId()});
         return retResult;
-    }*/
+    }
 
     /*public ExpensesDBModel fnGetExpenses(String intExpId){
 
@@ -105,10 +107,9 @@ public class DBSubject extends SQLiteOpenHelper {
 
     }*/
 
-    public List<Subject> fnGetSubject(String studentNo){
+    public List<Subject> fnGetSubjects(String studentNo){
         List<Subject> list = new ArrayList<Subject>();
-        //String strSelAll = "Select * from " + tblNameSubject + " where "+ colStudNo +" = " + studentNo;
-        String strSelAll = "Select * from " + tblNameSubject;
+        String strSelAll = "Select * from " + tblNameSubject + " where "+ colStudNo +" = '" + studentNo+"'";
 
         Cursor cursor = this.getReadableDatabase().rawQuery(strSelAll,null);
         if(cursor.moveToFirst()){
@@ -118,7 +119,9 @@ public class DBSubject extends SQLiteOpenHelper {
                             cursor.getString(cursor.getColumnIndex(colSubCode)),
                             cursor.getString(cursor.getColumnIndex(colSubjName)),
                             cursor.getDouble(cursor.getColumnIndex(colSubjHour)),
-                            cursor.getDouble(cursor.getColumnIndex(colSubGrade)));
+                            cursor.getInt(cursor.getColumnIndex(colSubGrade)),
+                            cursor.getString(cursor.getColumnIndex(colStudNo)),
+                            cursor.getString(cursor.getColumnIndex(colSubjId)));
                 list.add(model);
             }while(cursor.moveToNext());
         }

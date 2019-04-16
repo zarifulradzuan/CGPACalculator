@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/activity_acitivity_exp_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context="com.bitp3453.mydailyexpenses.ActivityExpList">
+
+        <TextView
+            android:id="@+id/txtVwSubjCode"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Code" />
+
+        <TextView
+            android:id="@+id/txtVwSubjName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Name" />
+
+        <TextView
+            android:id="@+id/txtVwSubjHour"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Hour" />
+
+        <TextView
+            android:id="@+id/txtVwSubjGrade"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Grade" />
+
+    </LinearLayout>
+</LinearLayout>
