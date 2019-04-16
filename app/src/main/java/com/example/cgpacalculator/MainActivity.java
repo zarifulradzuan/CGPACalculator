@@ -118,14 +118,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent){
         super.onActivityResult(requestCode, resultCode, intent);
-        if(resultCode==RESULT_OK && requestCode == 0){
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("studentName",intent.getStringExtra("studentName"));
-            editor.putString("studentNo",intent.getStringExtra("studentNo"));
-            editor.commit();
+        if(requestCode == 0){
+            if(resultCode==RESULT_OK){
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("studentName",intent.getStringExtra("studentName"));
+                editor.putString("studentNo",intent.getStringExtra("studentNo"));
+                editor.commit();
+                finish();
+                startActivity(getIntent());
+            }
+            else
+                finish();
         }
-        finish();
-        startActivity(getIntent());
+        else
+            loadData();
+
     }
 
     @Override
