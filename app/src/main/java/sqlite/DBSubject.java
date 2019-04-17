@@ -78,6 +78,16 @@ public class DBSubject extends SQLiteOpenHelper {
         return retResult;
     }
 
+    public float fnDeleteSubject(String subjectId){
+        float retResult;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        System.out.println(subjectId);
+        values.put(colSubjId, subjectId);
+        retResult = db.delete(tblNameSubject, colSubjId+" = ?", new String[]{subjectId});
+        return retResult;
+    }
+
     public float fnEditSubject(Subject subject){
         float retResult;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -91,21 +101,6 @@ public class DBSubject extends SQLiteOpenHelper {
         retResult = db.update(tblNameSubject, values, colSubjId+" = ?", new String[]{subject.getSubjectId()});
         return retResult;
     }
-
-    /*public ExpensesDBModel fnGetExpenses(String intExpId){
-
-        String strSelQry = "Select * from " + tblNameExpense + " where "+ colExpId +" = " + intExpId;
-        Cursor cursor = this.getReadableDatabase().rawQuery(strSelQry,null);
-        if(cursor!=null){
-            cursor.moveToFirst();
-        }
-        return new ExpensesDBModel(
-                cursor.getString(cursor.getColumnIndex(colExpName)),
-                cursor.getDouble(cursor.getColumnIndex(colExpPrice)),
-                cursor.getString(cursor.getColumnIndex(colExpDate)),
-                cursor.getString(cursor.getColumnIndex(colExpTime)));
-
-    }*/
 
     public List<Subject> fnGetSubjects(String studentNo){
         List<Subject> list = new ArrayList<Subject>();

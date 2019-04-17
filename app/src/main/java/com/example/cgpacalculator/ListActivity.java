@@ -1,6 +1,10 @@
 package com.example.cgpacalculator;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,11 +17,10 @@ import java.util.List;
 import model.Subject;
 import sqlite.DBSubject;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends Activity {
     RecyclerView subjectRecycler;
     String studentNo;
     DBSubject dbSubject;
-
     CustomAdapterSubjectList customAdapterSubjectList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +38,48 @@ public class ListActivity extends AppCompatActivity {
 
         customAdapterSubjectList.setOnItemClickListener(new CustomAdapterSubjectList.ClickListener() {
             @Override
-            public void onItemClick(int position, View v) {
-                Intent intent = new Intent(getApplicationContext(),EditActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("subject", subjectList.get(position));
-                intent.putExtras(bundle);
-                startActivityForResult(intent,0);
+            public void onItemClick(final int position, View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
+                builder.setTitle("Options");
+                //builder.setMessage("What do you want to do?");
+                builder.setItems(new CharSequence[]{"Edit", "Delete", "Cancel"},
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch(which){
+                                    case 0: Intent intent = new Intent(ListActivity.this,EditActivity.class);
+                                        Bundle bundle = new Bundle();
+                                        bundle.putSerializable("subject", subjectList.get(position));
+                                        intent.putExtras(bundle);
+                                        startActivityForResult(intent,0);
+                                        break;
+                                    case 1: dbSubject.fnDeleteSubject(subjectList.get(position).getSubjectId());
+                                        customAdapterSubjectList.setItems(dbSubject.fnGetSubjects(studentNo));
+                                        customAdapterSubjectList.notifyDataSetChanged();
+                                        break;
+
+                                }
+                            }
+                        });
+                /*builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dbSubject.fnDeleteSubject(subjectList.get(position).getSubjectId());
+                        customAdapterSubjectList.setItems(dbSubject.fnGetSubjects(studentNo));
+                        customAdapterSubjectList.notifyDataSetChanged();
+                    }
+                });
+                builder.setNegativeButton("Edit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getApplicationContext(),EditActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("subject", subjectList.get(position));
+                        intent.putExtras(bundle);
+                        startActivityForResult(intent,0);
+                    }
+                });*/
+                builder.show();
             }
         });
         customAdapterSubjectList.notifyDataSetChanged();
